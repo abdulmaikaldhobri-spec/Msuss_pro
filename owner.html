@@ -1,0 +1,162 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>لوحة مالك الدفتر</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@600;700&display=swap">
+<style>
+/* Layout: single narrow column, summary row, publish banner, subscriber cards, bottom-sheet forms.
+   Palette: cool grey ground, deep teal accent, amber for expiring, red for stopped/expired. */
+:root{
+  --bg:#f2f5f4;--surface:#ffffff;--surface2:#e8eeec;--fg:#122022;--muted:#5a6a6c;--line:#d8e0de;
+  --accent:#0b5d54;--accent-fg:#ffffff;--ok:#17784a;--warn:#a96a10;--bad:#b3392f;--shadow:0 10px 30px rgba(18,32,34,.16);
+  --f-display:"Reem Kufi","Tajawal","Segoe UI",Tahoma,sans-serif;--f-body:"IBM Plex Sans Arabic","Tajawal","Segoe UI",Tahoma,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1516;--surface:#162022;--surface2:#1d2a2c;--fg:#e9f0ee;--muted:#9bb0ae;--line:#2a3a3c;
+  --accent:#5fd0b8;--accent-fg:#06211c;--ok:#4cc38a;--warn:#e6a54a;--bad:#ef7b70;--shadow:0 10px 30px rgba(0,0,0,.55);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1516;--surface:#162022;--surface2:#1d2a2c;--fg:#e9f0ee;--muted:#9bb0ae;--line:#2a3a3c;
+  --accent:#5fd0b8;--accent-fg:#06211c;--ok:#4cc38a;--warn:#e6a54a;--bad:#ef7b70;--shadow:0 10px 30px rgba(0,0,0,.55);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.col{max-width:640px;margin:0 auto}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in oklab,var(--bg) 92%,transparent);backdrop-filter:blur(10px);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.top .col{display:flex;align-items:center;gap:10px}
+.mono{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font:700 18px var(--f-display)}
+.top b{font:700 20px var(--f-display);margin-inline-end:auto}
+.ib{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface)}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
+.box small{color:var(--muted);display:block}.box b{font:700 24px/1.3 var(--f-display);font-variant-numeric:tabular-nums}
+.banner{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:12px;background:color-mix(in oklab,var(--warn) 14%,var(--surface));border:1px solid color-mix(in oklab,var(--warn) 40%,var(--line));border-radius:14px;padding:10px 12px}
+.banner.ok{background:color-mix(in oklab,var(--ok) 12%,var(--surface));border-color:color-mix(in oklab,var(--ok) 35%,var(--line))}
+h2.s{font:700 18px var(--f-display);margin:20px 0 8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:8px;margin-top:10px}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.nm{font-weight:600;overflow-wrap:anywhere}
+.code{font:600 20px var(--f-display);letter-spacing:2px;font-variant-numeric:tabular-nums;background:var(--surface2);border-radius:8px;padding:0 10px;direction:ltr}
+.st{font-size:13px;padding:1px 10px;border-radius:12px;white-space:nowrap}
+.st.ok{background:color-mix(in oklab,var(--ok) 16%,var(--surface));color:var(--ok)}
+.st.warn{background:color-mix(in oklab,var(--warn) 18%,var(--surface));color:var(--warn)}
+.st.bad{background:color-mix(in oklab,var(--bad) 16%,var(--surface));color:var(--bad)}
+.mut{color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{height:44px;border-radius:12px;padding:0 16px;background:var(--accent);color:var(--accent-fg);font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;border:1px solid transparent}
+.btn.ghost{background:var(--surface);color:var(--fg);border-color:var(--line)}
+.btn.wa{background:#1f9d57;color:#fff}.btn.bad{background:var(--bad);color:#fff}
+.btn.sm{height:36px;padding:0 12px;font-size:14px;border-radius:10px}
+.login{max-width:360px;margin:60px auto;display:grid;gap:12px;text-align:center}
+.fab{position:fixed;z-index:25;inset-inline-start:max(16px,env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));height:52px;padding:0 22px;border-radius:26px;box-shadow:var(--shadow)}
+.fld{width:100%;height:44px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:0 12px}
+textarea.fld{height:auto;padding:10px 12px;resize:vertical}
+.lab{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:var(--surface)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:transparent}
+.help{background:var(--surface2);border-radius:10px;padding:10px 12px;font-size:13.5px;color:var(--muted)}
+.help ol{margin:6px 0 0;padding-inline-start:22px}.help li{margin:3px 0}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:22px 16px;text-align:center;color:var(--muted);margin-top:10px}
+.err{color:var(--bad);font-size:13.5px;min-height:1.2em}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(8,14,15,.55);display:flex;align-items:flex-end;justify-content:center}
+.panel{background:var(--bg);width:100%;max-width:640px;max-height:94dvh;overflow:auto;border-radius:18px 18px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px));box-shadow:var(--shadow);overscroll-behavior:contain}
+@media(min-width:700px){.ov{align-items:center}.panel{border-radius:18px;padding:20px 22px 24px}}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.ph h2{margin:0;font:700 21px var(--f-display)}
+.form{display:grid;gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{position:fixed;inset-inline:0;bottom:calc(86px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;z-index:80;pointer-events:none}
+.toast span{background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:14px;box-shadow:var(--shadow)}
+@media(prefers-reduced-motion:no-preference){.panel{animation:up .2s ease-out}@keyframes up{from{transform:translateY(22px);opacity:.4}}}
+</style>
+<style>[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<header class="top"><div class="col"><span class="mono">م</span><b>لوحة مالك الدفتر</b><button class="ib" data-act="settings" aria-label="الإعدادات" id="setb" hidden>⚙️</button></div></header>
+<main class="col" id="app"></main>
+<button class="btn fab" data-act="add" id="fab" hidden>+ مشترك جديد</button>
+<div class="ov" id="ov" hidden><div class="panel" id="panel" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" aria-live="polite"></div>
+<script>
+(function(){
+var CFG={apiKey:"AIzaSyDkwQCZvpe-Dw675Uo9NQ3mgJdcy8VN_yU",projectId:"muss-b1fb8",fs:"https://firestore.googleapis.com",id:"https://identitytoolkit.googleapis.com",tk:"https://securetoken.googleapis.com"};
+var APP_URL="https://abdulmaikaldhobri-spec.github.io/Msuss_pro/ledger.html";
+var $=function(i){return document.getElementById(i)};
+function h(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function hh(str,seed){seed=seed||0;var h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(var i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return(4294967296*(2097151&h2)+(h1>>>0)).toString(36)}
+function pad(n){return("0"+n).slice(-2)}
+function ymd(d){return d.getUTCFullYear()+"-"+pad(d.getUTCMonth()+1)+"-"+pad(d.getUTCDate())}
+function today(){var d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function pd(s){var p=s.split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]))}
+function days(s){return Math.round((pd(s)-pd(today()))/864e5)}
+function addDays(s,n){return ymd(new Date(pd(s).getTime()+n*864e5))}
+function addMonths(s,n){var d=pd(s),day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+n);var last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();d.setUTCDate(Math.min(day,last));return ymd(d)}
+function show(s){var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function toast(m){var t=$("toast");t.innerHTML="<span>"+h(m)+"</span>";clearTimeout(toast.k);toast.k=setTimeout(function(){t.innerHTML=""},2600)}
+function copy(txt,ok){var done=function(){toast(ok||"تم النسخ")};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,fb)}else fb();function fb(){var a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand("copy");done()}catch(e){toast("حدد النص وانسخه يدوياً")}a.remove()}}
+function waNum(n){var d=String(n||"").replace(/\D/g,"");if(!d)return"";if(d.indexOf("00")==0)d=d.slice(2);if(d.indexOf("967")==0)return d;if(d.charAt(0)=="0")d=d.slice(1);if(d.length==9&&d.charAt(0)=="7")return"967"+d;return d}
+/* ---- Firebase REST ---- */
+var A={email:"",refresh:"",token:"",exp:0};
+try{var sv=JSON.parse(localStorage.getItem("muss-owner-auth")||"null");if(sv){A.email=sv.email||"";A.refresh=sv.refresh||""}}catch(e){}
+function saveA(){try{localStorage.setItem("muss-owner-auth",JSON.stringify({email:A.email,refresh:A.refresh}))}catch(e){}}
+function jfetch(url,opt){return fetch(url,opt).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok){var e=new Error((j.error&&(j.error.message||j.error.status))||("HTTP "+r.status));e.status=r.status;throw e}return j})})}
+function login(email,pw){return jfetch(CFG.id+"/v1/accounts:signInWithPassword?key="+CFG.apiKey,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email,password:pw,returnSecureToken:true})}).then(function(j){A.email=email;A.refresh=j.refreshToken;A.token=j.idToken;A.exp=Date.now()+(+j.expiresIn-60)*1000;saveA()})}
+function tokenOk(){if(A.token&&Date.now()<A.exp)return Promise.resolve(A.token);if(!A.refresh)return Promise.reject(new Error("NO_AUTH"));
+ return jfetch(CFG.tk+"/v1/token?key="+CFG.apiKey,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(A.refresh)}).then(function(j){A.token=j.id_token;A.refresh=j.refresh_token||A.refresh;A.exp=Date.now()+(+j.expires_in-60)*1000;saveA();return A.token})}
+function docUrl(col,id){return CFG.fs+"/v1/projects/"+CFG.projectId+"/databases/(default)/documents/"+col+(id?"/"+encodeURIComponent(id):"")}
+function enc(o){var f={};Object.keys(o).forEach(function(k){var v=o[k];f[k]=typeof v=="boolean"?{booleanValue:v}:typeof v=="number"?{integerValue:String(v)}:{stringValue:String(v==null?"":v)}});return{fields:f}}
+function dec(d){var o={};Object.keys(d.fields||{}).forEach(function(k){var v=d.fields[k];o[k]=v.stringValue!==undefined?v.stringValue:v.booleanValue!==undefined?v.booleanValue:v.integerValue!==undefined?+v.integerValue:""});o.id=decodeURIComponent((d.name||"").split("/").pop());return o}
+function api(method,col,id,body){return tokenOk().then(function(t){return jfetch(docUrl(col,id)+(method=="GET"&&!id?"?pageSize=300":""),{method:method,headers:{"Authorization":"Bearer "+t,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined})})}
+function loadSubs(){return api("GET","subs","").then(function(j){S.subs=(j.documents||[]).map(dec)})}
+function putSub(x){return Promise.all([api("PATCH","subs",x.id,enc({name:x.name,phone:x.phone||"",note:x.note||"",code:x.code,exp:x.exp,active:x.active,created:x.created||Date.now()})),api("PATCH","licenses",x.id,enc({exp:x.exp,active:x.active}))])}
+function delSub(x){return Promise.all([api("DELETE","subs",x.id),api("DELETE","licenses",x.id)])}
+var S={subs:[]},ui={del:null,dur:"1m",edit:null,busy:false};
+function rcode(){var c;do{c=String(100000+Math.floor(Math.random()*900000))}while(S.subs.some(function(x){return x.code==c}));return c}
+function status(x){if(!x.active)return{t:"موقوف",c:"bad"};var d=days(x.exp);if(d<0)return{t:"منتهي منذ "+(-d)+" يوم",c:"bad"};if(d==0)return{t:"ينتهي اليوم",c:"warn"};if(d<=7)return{t:"ينتهي بعد "+d+" يوم",c:"warn"};return{t:"نشط · حتى "+show(x.exp),c:"ok"}}
+function msg(x){return"أهلاً "+x.name+"،\nهذا رابط دفتر الديون:\n"+APP_URL+"\n\nكود الاشتراك: "+x.code+"\nصالح حتى: "+show(x.exp)+"\n\nافتح الرابط من Chrome واكتب الكود. ولتثبيته كتطبيق: اضغط ⋮ ثم «تثبيت التطبيق»."}
+function sub(id){return S.subs.filter(function(x){return x.id==id})[0]}
+function err(e){return e&&e.message=="NO_AUTH"?"سجّل الدخول من جديد":e&&(e.status==403||/PERMISSION/i.test(e.message))?"لا توجد صلاحية. تحقق من قواعد Firestore ومن بريد المالك":"تعذّر الاتصال: "+(e&&e.message||"")}
+function guard(p,okmsg){ui.busy=true;return p.then(function(){return loadSubs()}).then(function(){ui.busy=false;if(okmsg)toast(okmsg);render()},function(e){ui.busy=false;toast(err(e));if(e&&e.message=="NO_AUTH")loginView();else render()})}
+/* ---- views ---- */
+function loginView(msg){
+ $("fab").hidden=true;$("setb").hidden=true;
+ $("app").innerHTML='<div class="login"><span class="mono" style="margin:0 auto;width:54px;height:54px;font-size:26px">م</span><h2 style="margin:0;font:700 22px var(--f-display)">دخول المالك</h2><input class="fld" id="l_email" type="email" dir="ltr" placeholder="البريد" value="'+h(A.email)+'" autocomplete="username"><input class="fld" id="l_pw" type="password" dir="ltr" placeholder="كلمة المرور" autocomplete="current-password"><div class="err" id="er">'+h(msg||"")+'</div><button class="btn" data-act="login">دخول</button></div>';
+}
+function render(){
+ $("fab").hidden=false;$("setb").hidden=false;
+ var act=S.subs.filter(function(x){return x.active&&days(x.exp)>=0}).length,soon=S.subs.filter(function(x){return x.active&&days(x.exp)>=0&&days(x.exp)<=7}).length,ended=S.subs.filter(function(x){return!x.active||days(x.exp)<0}).length;
+ var html='<div class="sum"><div class="box"><small>نشطون</small><b style="color:var(--ok)">'+act+'</b></div><div class="box"><small>ينتهون قريباً</small><b style="color:var(--warn)">'+soon+'</b></div><div class="box"><small>منتهون أو موقوفون</small><b style="color:var(--bad)">'+ended+"</b></div></div>";
+ html+='<h2 class="s">المشتركون</h2>';
+ var L=S.subs.slice().sort(function(a,b){return(b.created||0)-(a.created||0)});
+ html+=L.length?L.map(function(x){var st=status(x);return'<div class="card"><div class="head"><div><div class="nm">'+h(x.name)+'</div><small class="mut" dir="ltr">'+h(x.phone||"")+(x.note?" · "+h(x.note):"")+'</small></div><span class="st '+st.c+'">'+st.t+'</span></div><div class="row"><button class="code" data-act="cpcode" data-id="'+h(x.id)+'" aria-label="نسخ الكود">'+h(x.code)+'</button><small class="mut">اضغط الكود لنسخه</small></div><div class="row"><a class="btn wa sm" target="_blank" rel="noopener" href="https://wa.me/'+waNum(x.phone)+"?text="+encodeURIComponent(msg(x))+'">إرسال الكود</a>'+(st.c!="ok"&&x.active?'<a class="btn ghost sm" target="_blank" rel="noopener" href="https://wa.me/'+waNum(x.phone)+"?text="+encodeURIComponent("أهلاً "+x.name+"، اشتراكك في دفتر الديون "+(days(x.exp)<0?"انتهى":"ينتهي")+" بتاريخ "+show(x.exp)+". للتجديد تواصل معنا.")+'">تذكير بالتجديد</a>':"")+'<button class="btn ghost sm" data-act="ext" data-id="'+h(x.id)+'">تمديد</button><button class="btn ghost sm" data-act="tog" data-id="'+h(x.id)+'">'+(x.active?"إيقاف":"تفعيل")+'</button><button class="btn ghost sm" data-act="del" data-id="'+h(x.id)+'">'+(ui.del==x.id?"تأكيد الحذف":"حذف")+"</button></div></div>"}).join(""):'<div class="empty">لا يوجد مشتركون بعد.<br>اضغط «+ مشترك جديد». أضف نفسك أولاً بمدة سنة لتجرّب الدفتر بكودك.</div>';
+ $("app").innerHTML=html;
+}
+function open(html){$("panel").innerHTML=html;$("ov").hidden=false;document.body.style.overflow="hidden";$("panel").scrollTop=0}
+function close(){$("ov").hidden=true;document.body.style.overflow="";ui.del=null;if(A.token||A.refresh)render()}
+function head(t){return'<div class="ph"><h2>'+t+'</h2><button class="ib" data-act="close" aria-label="إغلاق">✕</button></div>'}
+var DUR=[["7d","تجربة ٧ أيام"],["1m","شهر"],["3m","٣ أشهر"],["6m","٦ أشهر"],["12m","سنة"]];
+function durChips(sel,act){return'<div class="chips">'+DUR.map(function(d){return'<button class="chip" type="button" data-act="'+act+'" data-v="'+d[0]+'" aria-pressed="'+(sel==d[0])+'">'+d[1]+"</button>"}).join("")+"</div>"}
+function endFor(k,from){return k=="7d"?addDays(from,7):addMonths(from,parseInt(k))}
+document.addEventListener("click",function(ev){
+ if(ev.target.id=="ov"){close();return}
+ var b=ev.target.closest("[data-act]");if(!b)return;var a=b.dataset.act,d=b.dataset;
+ switch(a){
+ case"login":var em=$("l_email").value.trim(),pw=$("l_pw").value;if(!em||!pw){$("er").textContent="اكتب البريد وكلمة المرور.";break}
+  b.disabled=true;login(em,pw).then(function(){return loadSubs()}).then(function(){render()},function(e){loginView(/INVALID|EMAIL|PASSWORD|CREDENTIAL/i.test(e.message)?"البريد أو كلمة المرور غير صحيحة.":err(e))});break;
+ case"close":close();break;
+ case"add":ui.dur="1m";open(head("مشترك جديد")+'<div class="form"><label class="lab">الاسم<input class="fld" id="a_name" placeholder="مثال: بقالة النور" autocomplete="off"></label><label class="lab">رقم الواتساب (لإرسال الكود)<input class="fld" id="a_phone" inputmode="tel" placeholder="77xxxxxxx" autocomplete="off"></label><div class="lab">مدة الاشتراك'+durChips(ui.dur,"adur")+'</div><label class="lab">ملاحظة (اختياري)<input class="fld" id="a_note" placeholder="مثال: دفع ٥٠٠٠ ر.س"></label><div class="err" id="er"></div><button class="btn" data-act="saveadd">إنشاء الكود</button></div>');break;
+ case"adur":ui.dur=d.v;[].forEach.call(document.querySelectorAll('[data-act="adur"]'),function(x){x.setAttribute("aria-pressed",x.dataset.v==d.v)});break;
+ case"saveadd":var n=$("a_name").value.trim();if(!n){$("er").textContent="اكتب اسم المشترك.";break}
+  var code=rcode(),x={id:hh("muss-access:"+code),name:n,phone:$("a_phone").value.trim(),note:$("a_note").value.trim(),code:code,exp:endFor(ui.dur,today()),active:true,created:Date.now()};
+  b.disabled=true;$("ov").hidden=true;document.body.style.overflow="";guard(putSub(x),"تم إنشاء الكود وهو يعمل الآن");break;
+ case"cpcode":copy(sub(d.id).code,"تم نسخ الكود");break;
+ case"ext":var e1=sub(d.id);ui.edit=e1.id;ui.dur="1m";open(head("تمديد · "+h(e1.name))+'<div class="form"><div class="help">ينتهي الآن في '+show(e1.exp)+(days(e1.exp)<0?" (منتهي)":"")+'. التمديد يبدأ من اليوم إن كان منتهياً، ومن تاريخ الانتهاء إن كان ساري.</div><div class="lab">أضف مدة'+durChips(ui.dur,"edur")+'</div><button class="btn" data-act="saveext">تمديد</button></div>');break;
+ case"edur":ui.dur=d.v;[].forEach.call(document.querySelectorAll('[data-act="edur"]'),function(x){x.setAttribute("aria-pressed",x.dataset.v==d.v)});break;
+ case"saveext":var y=sub(ui.edit),from=days(y.exp)<0?today():y.exp;y.exp=endFor(ui.dur,from);y.active=true;$("ov").hidden=true;document.body.style.overflow="";guard(putSub(y),"تم التمديد حتى "+show(y.exp));break;
+ case"tog":var z=sub(d.id);z.active=!z.active;guard(putSub(z),z.active?"تم التفعيل":"تم الإيقاف فوراً");break;
+ case"del":if(ui.del==d.id){var dx=sub(d.id);ui.del=null;guard(delSub(dx),"تم الحذف")}else{ui.del=d.id;render()}break;
+ case"settings":open(head("الحساب")+'<div class="form"><div class="help">مسجّل الدخول: <b dir="ltr">'+h(A.email)+'</b></div><label class="lab">رابط التطبيق (يُرسل للمشتركين)<input class="fld" dir="ltr" value="'+h(APP_URL)+'" readonly></label><button class="btn ghost" data-act="logout">تسجيل الخروج</button></div>');break;
+ case"logout":A.token="";A.refresh="";A.exp=0;saveA();$("ov").hidden=true;document.body.style.overflow="";S.subs=[];loginView();break;
+ }
+});
+document.addEventListener("keydown",function(ev){if(ev.key=="Escape"&&!$("ov").hidden)close();if(ev.key=="Enter"&&ev.target.id=="l_pw"){var b=document.querySelector('[data-act="login"]');if(b)b.click()}});
+if(CFG.apiKey.indexOf("__")==0){$("app").innerHTML='<div class="empty">اللوحة غير مهيّأة بعد (إعدادات Firebase).</div>'}
+else if(A.refresh){loadSubs().then(render,function(){loginView()})}else loginView();
+})();
+</script></body></html>
